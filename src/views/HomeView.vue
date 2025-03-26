@@ -83,7 +83,7 @@ const selectPokemon = async (pokemon) => {
 
 <template>
   <main>
-    <div class="container mt-4">
+    <div class="container-fluid mt-4 px-3 px-md-4">
       <div class="form-group mb-4">
         <label hidden for="searchPokemonField" class="form-label">Search..</label>
         <input
@@ -130,6 +130,7 @@ const selectPokemon = async (pokemon) => {
 .scrollable-list {
   max-height: 450px;
   overflow-y: auto;
-  padding-right: 12px; /* Optional: adds space for scrollbar */
+  padding-right: 12px;
+  overflow-x: hidden;
 }
 </style>
