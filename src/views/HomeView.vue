@@ -8,7 +8,19 @@ const baseURLSvg = ref(
 )
 const pokemons = ref([])
 const searchPokemonField = ref('')
-const pokemonSelected = reactive(ref(''))
+const pokemonSelected = ref({
+  name: '',
+  base_experience: '-',
+  height: '-',
+  sprites: {
+    other: {
+      dream_world: {
+        front_default: '/images/egg.png',
+      },
+    },
+  },
+})
+
 const loading = ref(false)
 
 onMounted(async () => {
