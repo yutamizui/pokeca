@@ -24,15 +24,35 @@ const pokemonSelected = ref({
 const loading = ref(false)
 
 onMounted(async () => {
-  const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=30&offset=0') // 🔽 Reduced for performance
+  const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=150&offset=0')
   const data = await response.json()
-  pokemons.value = data.results
+
+  // Fetch Japanese names for each Pokémon
+  const enriched = await Promise.all(
+    data.results.map(async (pokemon) => {
+      const id = pokemon.url.split('/')[6]
+
+      const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}/`)
+      const speciesData = await speciesRes.json()
+      const jpName =
+        speciesData.names.find((n) => n.language.name === 'ja-Hrkt')?.name || pokemon.name
+
+      return {
+        ...pokemon,
+        id,
+        jaName: jpName,
+      }
+    }),
+  )
+
+  pokemons.value = enriched
 })
 
 const pokemonFiltered = computed(() => {
   if (pokemons.value && searchPokemonField.value) {
-    return pokemons.value.filter((pokemon) =>
-      pokemon.name.toLowerCase().includes(searchPokemonField.value.toLowerCase()),
+    const search = searchPokemonField.value.toLowerCase()
+    return pokemons.value.filter(
+      (pokemon) => pokemon.name.toLowerCase().includes(search) || pokemon.jaName?.includes(search),
     )
   }
   return pokemons.value
@@ -43,7 +63,16 @@ const selectPokemon = async (pokemon) => {
   try {
     const res = await fetch(pokemon.url)
     const data = await res.json()
-    pokemonSelected.value = data
+    const id = data.id
+    const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}/`)
+    const speciesData = await speciesRes.json()
+
+    const jpName = speciesData.names.find((n) => n.language.name === 'ja-Hrkt')?.name || data.name
+
+    pokemonSelected.value = {
+      ...data,
+      japaneseName: jpName,
+    }
   } catch (error) {
     console.error(error)
   } finally {
@@ -62,38 +91,35 @@ const selectPokemon = async (pokemon) => {
           type="text"
           class="form-control"
           id="searchPokemonField"
-          placeholder="Search"
+          placeholder="ポケモン検索"
         />
       </div>
 
-      <!-- 🔁 Main Layout: Left and Right Columns -->
-      <div class="row card-list">
-        <!-- Left: Selected Pokémon -->
-        <div class="col-md-4 mb-3">
+      <div class="row">
+        <!-- Pokémon list: comes first on SP, second on desktop -->
+        <div class="col-md-8 order-2 order-md-1 scrollable-list">
+          <div class="row">
+            <div v-for="pokemon in pokemonFiltered" :key="pokemon.name" class="col-6 col-sm-4 mb-3">
+              <ListPokemons
+                :name="pokemon.name"
+                :jaName="pokemon.jaName"
+                :baseURLSvg="baseURLSvg + pokemon.id + '.svg'"
+                :isSelected="pokemon.name === pokemonSelected.name"
+                @click="selectPokemon(pokemon)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Selected Pokémon: comes after list on SP, first on desktop -->
+        <div class="col-md-4 order-1 order-md-2 mb-3">
           <CardPokemonSelected
-            :name="pokemonSelected.name"
+            :name="pokemonSelected.japaneseName || pokemonSelected.name"
             :xp="pokemonSelected.base_experience"
             :height="pokemonSelected.height"
             :img="pokemonSelected.sprites?.other?.dream_world?.front_default || '/images/egg.png'"
             :loading="loading"
           />
-        </div>
-
-        <!-- Right: Pokémon list -->
-        <div class="col-md-8">
-          <div class="row">
-            <div
-              v-for="pokemon in pokemonFiltered"
-              :key="pokemon.name"
-              class="col-sm-6 col-lg-4 mb-3"
-            >
-              <ListPokemons
-                :name="pokemon.name"
-                :baseURLSvg="baseURLSvg + pokemon.url.split('/')[6] + '.svg'"
-                @click="selectPokemon(pokemon)"
-              />
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -101,8 +127,9 @@ const selectPokemon = async (pokemon) => {
 </template>
 
 <style scoped>
-.card-list {
+.scrollable-list {
   max-height: 450px;
-  overflow-y: scroll;
+  overflow-y: auto;
+  padding-right: 12px; /* Optional: adds space for scrollbar */
 }
 </style>

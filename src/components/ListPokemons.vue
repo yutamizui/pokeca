@@ -1,11 +1,15 @@
 <script setup>
-const props = defineProps(['name', 'baseURLSvg'])
+const props = defineProps(['name', 'baseURLSvg', 'isSelected', 'jaName'])
 </script>
 
 <template>
-  <div class="card p-2 text-center cardListPokemon">
-    <h5 class="card-title text-capitalize">{{ props.name }}</h5>
-    <img :src="baseURLSvg" alt="" height="80" />
+  <div
+    class="card p-2 text-center"
+    :class="{ 'border-primary shadow': isSelected }"
+    style="cursor: pointer"
+  >
+    <img :src="baseURLSvg" :alt="name" height="96" />
+    <p class="text-capitalize mt-2">{{ jaName || name }}</p>
   </div>
 </template>
 

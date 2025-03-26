@@ -3,14 +3,14 @@
 <template>
   <div class="layout">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <img
         src="https://cdn-icons-png.flaticon.com/512/188/188987.png"
         width="30"
         height="30"
         alt=""
       />
-      <router-link class="navbar-brand text-white" to="/">Pokeca</router-link>
+      <router-link class="navbar-brand text-white" to="/">ポケカ</router-link>
       <button
         class="navbar-toggler"
         type="button"
@@ -31,6 +31,17 @@
             <router-link class="nav-link text-white" to="/about">About</router-link>
           </li>
         </ul>
+      </div>
+    </nav> -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="d-flex align-items-center">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/188/188987.png"
+          width="30"
+          height="30"
+          alt=""
+        />
+        <router-link class="navbar-brand text-white ms-2 pl-2" to="/">ポケカ</router-link>
       </div>
     </nav>
 
