@@ -31,6 +31,7 @@ const selectPokemon = async (pokemon) => {
   try {
     const res = await fetch(pokemon.url)
     const data = await res.json()
+    console.log(data) // ✅ here it's safe
     pokemonSelected.value = data
   } catch (error) {
     console.error(error)
@@ -38,8 +39,6 @@ const selectPokemon = async (pokemon) => {
     loading.value = false
   }
 }
-
-console.log(data)
 </script>
 
 <template>
@@ -61,7 +60,6 @@ console.log(data)
         <!-- Left: Selected Pokémon -->
         <div class="col-md-4 mb-3">
           <CardPokemonSelected
-            v-if="pokemonSelected"
             :name="pokemonSelected.name"
             :xp="pokemonSelected.base_experience"
             :height="pokemonSelected.height"
