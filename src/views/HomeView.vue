@@ -31,7 +31,6 @@ const selectPokemon = async (pokemon) => {
   try {
     const res = await fetch(pokemon.url)
     const data = await res.json()
-    console.log(data) // ✅ here it's safe
     pokemonSelected.value = data
   } catch (error) {
     console.error(error)
