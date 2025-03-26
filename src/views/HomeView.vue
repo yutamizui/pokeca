@@ -38,6 +38,8 @@ const selectPokemon = async (pokemon) => {
     loading.value = false
   }
 }
+
+console.log(data)
 </script>
 
 <template>
@@ -63,7 +65,7 @@ const selectPokemon = async (pokemon) => {
             :name="pokemonSelected.name"
             :xp="pokemonSelected.base_experience"
             :height="pokemonSelected.height"
-            :img="pokemonSelected.sprites.other.dream_world.front_default"
+            :img="pokemonSelected.sprites?.other?.dream_world?.front_default || '/images/egg.png'"
             :loading="loading"
           />
         </div>
